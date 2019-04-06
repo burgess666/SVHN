@@ -1,4 +1,3 @@
-
 import tensorflow as tf
 import numpy as np
 from scipy.io import loadmat
@@ -15,13 +14,14 @@ import time
 import os.path
 import subprocess
 
-
+# Define F1 score
 def f1_score(y_true, y_pred):
+
     y_pred = K.round(y_pred)
-    tp = K.sum(K.cast(y_true*y_pred, 'float32'), axis=0)
+    tp = K.sum(K.cast(y_true*y_pred, 'float'), axis=0)
     # tn = K.sum(K.cast((1-y_true)*(1-y_pred), 'float'), axis=0)
-    fp = K.sum(K.cast((1-y_true)*y_pred, 'float32'), axis=0)
-    fn = K.sum(K.cast(y_true*(1-y_pred), 'float32'), axis=0)
+    fp = K.sum(K.cast((1-y_true)*y_pred, 'float'), axis=0)
+    fn = K.sum(K.cast(y_true*(1-y_pred), 'float'), axis=0)
 
     p = tp / (tp + fp + K.epsilon())
     r = tp / (tp + fn + K.epsilon())
@@ -31,23 +31,26 @@ def f1_score(y_true, y_pred):
     return K.mean(f1)
 
 
+
 def loading_data():
+
     # First, download dataset (train, test and extra)
     if (os.path.exists(os.path.join('./data', 'train_32x32.mat'))):
         print("train_32x32.mat exists")
     else:
-        subprocess.run(['wget', 'http://ufldl.stanford.edu/housenumbers/train_32x32.mat'])
+        subprocess.run(['wget', '-P', 'data/', 'http://ufldl.stanford.edu/housenumbers/train_32x32.mat'])
         
     if (os.path.exists(os.path.join('./data', 'test_32x32.mat'))):
         print("test_32x32.mat exists")
     else:
-        subprocess.run(['wget', 'http://ufldl.stanford.edu/housenumbers/test_32x32.mat'])
+        subprocess.run(['wget', '-P', 'data/', 'http://ufldl.stanford.edu/housenumbers/test_32x32.mat'])
         
     if (os.path.exists(os.path.join('./data', 'extra_32x32.mat'))):
         print("extra_32x32.mat exists")
     else:
-        subprocess.run(['wget', 'http://ufldl.stanford.edu/housenumbers/extra_32x32.mat'])
+        subprocess.run(['wget', '-P', 'data/', 'http://ufldl.stanford.edu/housenumbers/extra_32x32.mat'])
         
+
     # Loading data from mat file
     X_train = loadmat(os.path.join('./data', 'train_32x32.mat'))["X"]
     y_train = loadmat(os.path.join('./data', 'train_32x32.mat'))["y"]
@@ -68,22 +71,7 @@ def loading_data():
     # Split origin train set into train set and validation set
     X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.1)
     
-    
-    # Train : Test : Validation = 65931 : 26032 : 7326
-
-    print('Train data shape: ', X_train.shape)
-    print('Test data shape: ', X_test.shape)
-    print('Validation data shape: ', X_val.shape)
-
-    print('label_train shape: ', y_train.shape)
-    print('label_test shape: ', y_test.shape)
-    print('label_validation shape: ', y_val.shape)
-
     return X_train, X_test, X_val, y_train, y_test, y_val
-    
-
-
-
 
 '''
 # View images
@@ -98,18 +86,49 @@ for i in range(25):
 '''
 
 
+'''model = Sequential()
 
+model.add(Conv2D(32, (3, 3), input_shape=(32,32,3)))
+model.add(BatchNormalization(axis=-1))
+model.add(Activation('relu'))
+model.add(Conv2D(32, (3, 3)))
+model.add(BatchNormalization(axis=-1))
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))
 
+model.add(Conv2D(64,(3, 3)))
+model.add(BatchNormalization(axis=-1))
+model.add(Activation('relu'))
+model.add(Conv2D(64, (3, 3)))
+model.add(BatchNormalization(axis=-1))
+model.add(Activation('relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))
+
+model.add(Flatten())
+
+# Fully connected layer
+model.add(Dense(512))
+model.add(BatchNormalization())
+model.add(Activation('relu'))
+model.add(Dropout(0.4))
+model.add(Dense(10))
+
+model.add(Activation('softmax'))
+
+model.summary()
 '''
-'''
-
 if __name__ == '__main__':
-
+    
     # Loading train and test data
     X_train, X_test, X_val, y_train, y_test, y_val = loading_data()
-
-    # Create model
-    ''' VGG
+    # Train : Test : Validation = 65931 : 26032 : 7326
+    print('Train data shape: ', X_train.shape)
+    print('Test data shape: ', X_test.shape)
+    print('Validation data shape: ', X_val.shape)
+    print('label_train shape: ', y_train.shape)
+    print('label_test shape: ', y_test.shape)
+    print('label_validation shape: ', y_val.shape)
+    
     model = Sequential()
     model.add(ZeroPadding2D((1,1),input_shape=(32,32,3)))
     model.add(Convolution2D(64, 3, 3, activation='relu'))
@@ -150,38 +169,11 @@ if __name__ == '__main__':
     model.add(Flatten())
     model.add(Dense(4096, activation='relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(4096, activation='relu'))
+    model.add(Dense(2048, activation='relu'))
     model.add(Dropout(0.5))
     model.add(Dense(10, activation='softmax'))
-    '''
-    model = Sequential()
 
-    model.add(Conv2D(32, (3, 3), input_shape=(32,32,3)))
-    model.add(BatchNormalization(axis=-1))
-    model.add(Activation('relu'))
-    model.add(Conv2D(32, (3, 3)))
-    model.add(BatchNormalization(axis=-1))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2,2)))
 
-    model.add(Conv2D(64,(3, 3)))
-    model.add(BatchNormalization(axis=-1))
-    model.add(Activation('relu'))
-    model.add(Conv2D(64, (3, 3)))
-    model.add(BatchNormalization(axis=-1))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2,2)))
-
-    model.add(Flatten())
-
-    # Fully connected layer
-    model.add(Dense(512))
-    model.add(BatchNormalization())
-    model.add(Activation('relu'))
-    model.add(Dropout(0.4))
-    model.add(Dense(10))
-
-    model.add(Activation('softmax'))
     model.summary()
 
     # Helper: Save the model.
@@ -203,7 +195,7 @@ if __name__ == '__main__':
 
     model.compile(optimizer='adam',
                  loss='sparse_categorical_crossentropy',
-                 metrics=['accuracy'])
+                 metrics=[f1_score])
 
     model.fit(X_train,
               y_train,
@@ -212,8 +204,9 @@ if __name__ == '__main__':
               validation_data=(X_val, y_val),
               callbacks=[tb, early_stopper, csv_logger, checkpointer],
               verbose=1)
-
     # Evaluate
     results = model.evaluate(X_test, y_test)
     print(results)
+
+
 
