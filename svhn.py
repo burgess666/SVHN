@@ -152,7 +152,7 @@ def traintest():
               epochs=20,
               batch_size=128,
               validation_data=(X_val, y_val),
-              callbacks=[tb, early_stopper, csv_logger, checkpointer],
+              callbacks=[early_stopper, checkpointer],
               verbose=1)
 
     # predict labels for testing set
