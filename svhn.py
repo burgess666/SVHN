@@ -195,7 +195,7 @@ if __name__ == '__main__':
 
     model.compile(optimizer='adam',
                  loss='sparse_categorical_crossentropy',
-                 metrics=['acc'])
+                 metrics=['accuracy'])
 
     model.fit(X_train,
               y_train,
