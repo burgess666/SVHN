@@ -178,7 +178,7 @@ if __name__ == '__main__':
 
     # Helper: Save the model.
     checkpointer = ModelCheckpoint(
-        filepath=os.path.join('./', 'checkpoints', '{epoch:03d}-{val_loss:.3f}.hdf5'),
+        filepath=os.path.join('./', 'checkpoints', '{epoch:03d}-{val_loss:.3f}.h5py'),
         verbose=1,
         save_best_only=True)
 
@@ -195,7 +195,7 @@ if __name__ == '__main__':
 
     model.compile(optimizer='adam',
                  loss='sparse_categorical_crossentropy',
-                 metrics=[f1_score])
+                 metrics=['acc'])
 
     model.fit(X_train,
               y_train,
