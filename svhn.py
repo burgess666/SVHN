@@ -2,32 +2,11 @@ import tensorflow as tf
 import numpy as np
 from scipy.io import loadmat
 from sklearn.model_selection import train_test_split
-from keras.models import Sequential
-from keras.layers import Dense, Activation, Dropout, Flatten, Conv2D, MaxPooling2D, BatchNormalization
-from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
-from keras.layers.core import Flatten, Dense, Dropout
-from keras.callbacks import TensorBoard, ModelCheckpoint, EarlyStopping, CSVLogger
+from tensorflow.keras import layers
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from sklearn.metrics import f1_score
-import time
 import os.path
 import subprocess
-
-# Define F1 score
-def f1_score(y_true, y_pred):
-
-    y_pred = K.round(y_pred)
-    tp = K.sum(K.cast(y_true*y_pred, 'float'), axis=0)
-    # tn = K.sum(K.cast((1-y_true)*(1-y_pred), 'float'), axis=0)
-    fp = K.sum(K.cast((1-y_true)*y_pred, 'float'), axis=0)
-    fn = K.sum(K.cast(y_true*(1-y_pred), 'float'), axis=0)
-
-    p = tp / (tp + fp + K.epsilon())
-    r = tp / (tp + fn + K.epsilon())
-
-    f1 = 2*p*r / (p+r+K.epsilon())
-    f1 = tf.where(tf.is_nan(f1), tf.zeros_like(f1), f1)
-    return K.mean(f1)
-
 
 # loading data
 def loading_data():
@@ -74,7 +53,43 @@ def loading_data():
 # define models
 def create_model():
 
-    model = Sequential()
+    model = tf.keras.Sequential()
+    model.add(layers.Conv2D(64, kernel_size=(3,3), padding='same', input_shape=(32,32,3), activation='relu'))
+    model.add(layers.Conv2D(64, kernel_size=(3,3), padding='same', activation='relu'))
+    model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
+
+    model.add(layers.Conv2D(128, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
+    model.add(layers.Conv2D(128, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
+    model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
+
+    model.add(layers.Conv2D(256, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
+    model.add(layers.Conv2D(256, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
+    model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
+
+    model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
+    model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
+    model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
+
+    model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
+    model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
+    model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
+
+    model.add(layers.Flatten())
+
+    model.add(layers.Dense(4096, activation='relu'))
+    model.add(layers.Dropout(0.5))
+    model.add(layers.Dense(4096, activation='relu'))
+    model.add(layers.Dropout(0.5))
+    model.add(layers.Dense(10, activation='softmax'))
+    model.summary()
+
+
+    '''
     model.add(Conv2D(32, (3, 3), input_shape=(32,32,3)))
     model.add(BatchNormalization(axis=-1))
     model.add(Activation('relu'))
@@ -99,7 +114,8 @@ def create_model():
     model.add(Dropout(0.4))
     model.add(Dense(10))
     model.add(Activation('softmax'))
-    model.summary()
+    '''
+
 
     model.compile(optimizer='adam',
                  loss='sparse_categorical_crossentropy',
@@ -126,15 +142,9 @@ def traintest():
         verbose=1,
         save_best_only=True)
 
-    # Helper: TensorBoard
-    tb = TensorBoard(log_dir=os.path.join('./', 'logs'))
-
     # Helper: Stop when we stop learning.
     early_stopper = EarlyStopping(patience=5, monitor='val_loss')
 
-    # Helper: Save results.
-    timestamp = time.time()
-    csv_logger = CSVLogger(os.path.join('./', 'logs' ,'training-' + str(timestamp) + '.log'))
     
     # Training
     model.fit(X_train,
@@ -147,7 +157,7 @@ def traintest():
 
     # predict labels for testing set
     y_predict = model.predict(X_test, batch_size=128)
-    average_f1 = f1_score(y_test, y_predict, average='macro')
+    average_f1 = f1_score(y_test, y_predict, average='weighted')
 
 if __name__ == '__main__':
     traintest()
