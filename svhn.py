@@ -72,7 +72,7 @@ def loading_data():
     return X_train, X_test, X_val, y_train, y_test, y_val
 
 # define models
-def model():
+def create_model():
 
     model = Sequential()
     model.add(Conv2D(32, (3, 3), input_shape=(32,32,3)))
@@ -134,7 +134,7 @@ def traintest():
     print('label_test shape: ', y_test.shape)
     print('label_validation shape: ', y_val.shape)
 
-    model = model()
+    model = create_model()
     model.fit(X_train,
               y_train,
               epochs=20,
