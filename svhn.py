@@ -101,22 +101,6 @@ def create_model():
     model.add(Activation('softmax'))
     model.summary()
 
-    # Helper: Save the model.
-    checkpointer = ModelCheckpoint(
-        filepath=os.path.join('./', 'checkpoints', '{epoch:03d}-{val_loss:.3f}.h5py'),
-        verbose=1,
-        save_best_only=True)
-
-    # Helper: TensorBoard
-    tb = TensorBoard(log_dir=os.path.join('./', 'logs'))
-
-    # Helper: Stop when we stop learning.
-    early_stopper = EarlyStopping(patience=5, monitor='val_loss')
-
-    # Helper: Save results.
-    timestamp = time.time()
-    csv_logger = CSVLogger(os.path.join('./', 'logs' ,'training-' + str(timestamp) + '.log'))
-
     model.compile(optimizer='adam',
                  loss='sparse_categorical_crossentropy',
                  metrics=['accuracy'])
@@ -135,6 +119,24 @@ def traintest():
     print('label_validation shape: ', y_val.shape)
 
     model = create_model()
+
+    # Helper: Save the model.
+    checkpointer = ModelCheckpoint(
+        filepath=os.path.join('./', 'checkpoints', '{epoch:03d}-{val_loss:.3f}.h5py'),
+        verbose=1,
+        save_best_only=True)
+
+    # Helper: TensorBoard
+    tb = TensorBoard(log_dir=os.path.join('./', 'logs'))
+
+    # Helper: Stop when we stop learning.
+    early_stopper = EarlyStopping(patience=5, monitor='val_loss')
+
+    # Helper: Save results.
+    timestamp = time.time()
+    csv_logger = CSVLogger(os.path.join('./', 'logs' ,'training-' + str(timestamp) + '.log'))
+    
+    # Training
     model.fit(X_train,
               y_train,
               epochs=20,
