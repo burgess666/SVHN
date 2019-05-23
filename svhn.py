@@ -86,49 +86,7 @@ for i in range(25):
 '''
 
 
-'''model = Sequential()
-
-model.add(Conv2D(32, (3, 3), input_shape=(32,32,3)))
-model.add(BatchNormalization(axis=-1))
-model.add(Activation('relu'))
-model.add(Conv2D(32, (3, 3)))
-model.add(BatchNormalization(axis=-1))
-model.add(Activation('relu'))
-model.add(MaxPooling2D(pool_size=(2,2)))
-
-model.add(Conv2D(64,(3, 3)))
-model.add(BatchNormalization(axis=-1))
-model.add(Activation('relu'))
-model.add(Conv2D(64, (3, 3)))
-model.add(BatchNormalization(axis=-1))
-model.add(Activation('relu'))
-model.add(MaxPooling2D(pool_size=(2,2)))
-
-model.add(Flatten())
-
-# Fully connected layer
-model.add(Dense(512))
-model.add(BatchNormalization())
-model.add(Activation('relu'))
-model.add(Dropout(0.4))
-model.add(Dense(10))
-
-model.add(Activation('softmax'))
-
-model.summary()
 '''
-if __name__ == '__main__':
-    
-    # Loading train and test data
-    X_train, X_test, X_val, y_train, y_test, y_val = loading_data()
-    # Train : Test : Validation = 65931 : 26032 : 7326
-    print('Train data shape: ', X_train.shape)
-    print('Test data shape: ', X_test.shape)
-    print('Validation data shape: ', X_val.shape)
-    print('label_train shape: ', y_train.shape)
-    print('label_test shape: ', y_test.shape)
-    print('label_validation shape: ', y_val.shape)
-    
     model = Sequential()
     model.add(ZeroPadding2D((1,1),input_shape=(32,32,3)))
     model.add(Convolution2D(64, 3, 3, activation='relu'))
@@ -175,6 +133,51 @@ if __name__ == '__main__':
 
 
     model.summary()
+'''
+if __name__ == '__main__':
+    
+    # Loading train and test data
+    X_train, X_test, X_val, y_train, y_test, y_val = loading_data()
+    # Train : Test : Validation = 65931 : 26032 : 7326
+    print('Train data shape: ', X_train.shape)
+    print('Test data shape: ', X_test.shape)
+    print('Validation data shape: ', X_val.shape)
+    print('label_train shape: ', y_train.shape)
+    print('label_test shape: ', y_test.shape)
+    print('label_validation shape: ', y_val.shape)
+    
+    model = Sequential()
+
+    model.add(Conv2D(32, (3, 3), input_shape=(32,32,3)))
+    model.add(BatchNormalization(axis=-1))
+    model.add(Activation('relu'))
+    model.add(Conv2D(32, (3, 3)))
+    model.add(BatchNormalization(axis=-1))
+    model.add(Activation('relu'))
+    model.add(MaxPooling2D(pool_size=(2,2)))
+
+    model.add(Conv2D(64,(3, 3)))
+    model.add(BatchNormalization(axis=-1))
+    model.add(Activation('relu'))
+    model.add(Conv2D(64, (3, 3)))
+    model.add(BatchNormalization(axis=-1))
+    model.add(Activation('relu'))
+    model.add(MaxPooling2D(pool_size=(2,2)))
+
+    model.add(Flatten())
+
+    # Fully connected layer
+    model.add(Dense(512))
+    model.add(BatchNormalization())
+    model.add(Activation('relu'))
+    model.add(Dropout(0.4))
+    model.add(Dense(10))
+
+    model.add(Activation('softmax'))
+
+    model.summary()
+
+
 
     # Helper: Save the model.
     checkpointer = ModelCheckpoint(
