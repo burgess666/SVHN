@@ -7,7 +7,8 @@ from keras.layers import Dense, Activation, Dropout, Flatten, Conv2D, MaxPooling
 from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
 from keras.layers.core import Flatten, Dense, Dropout
 from keras.callbacks import TensorBoard, ModelCheckpoint, EarlyStopping, CSVLogger
-from sklearn.metrics import f1_scoreimport time
+from sklearn.metrics import f1_score
+import time
 import os.path
 import subprocess
 
