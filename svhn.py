@@ -127,7 +127,7 @@ def create_model():
     model.summary()
     # Compile model
     model.compile(optimizer=tf.keras.optimizers.Adam(),
-                    loss = tf.keras.losses.sparse_categorical_crossentropy(),
+                    loss = 'sparse_categorical_crossentropy',
                     metrics=['accuracy'])
     return model
 
