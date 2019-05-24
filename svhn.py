@@ -46,7 +46,7 @@ def loading_data():
     y_test[y_test==10] = 0
     y_extra[y_extra==10] = 0
 
-    X_train = np.vstack(X_train, X_extra)
+    X_train = np.vstack((X_train, X_extra))
 
     # Reshape arrays
     X_train = X_train.transpose((3, 0, 1, 2))
