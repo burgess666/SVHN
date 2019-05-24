@@ -53,7 +53,7 @@ def loading_data():
 
 # define models
 def create_model():
-
+    '''
     # VGG16 style
     model = tf.keras.Sequential()
     model.add(layers.Conv2D(64, kernel_size=(3,3), padding='same', input_shape=(32,32,3), activation='relu'))
@@ -100,9 +100,23 @@ def create_model():
     model.add(layers.Dropout(0.5))
     model.add(layers.Dense(10, activation='softmax'))
     model.summary()
-
+    '''
+    model = tf.keras.Sequential()
+    # Must define the input shape in the first layer of the neural network
+    model.add(tf.keras.layers.Conv2D(filters=64, kernel_size=2, padding='same', activation='relu', input_shape=(32,32,1))) 
+    model.add(tf.keras.layers.MaxPooling2D(pool_size=2))
+    model.add(tf.keras.layers.Dropout(0.3))
+    model.add(tf.keras.layers.Conv2D(filters=32, kernel_size=2, padding='same', activation='relu'))
+    model.add(tf.keras.layers.MaxPooling2D(pool_size=2))
+    model.add(tf.keras.layers.Dropout(0.3))
+    model.add(tf.keras.layers.Flatten())
+    model.add(tf.keras.layers.Dense(256, activation='relu'))
+    model.add(tf.keras.layers.Dropout(0.5))
+    model.add(tf.keras.layers.Dense(10, activation='softmax'))
+    # Take a look at the model summary
+    model.summary()
     model.compile(optimizer='adam',
-                 loss='sparse_categorical_crossentropy',
+                 loss='categorical_crossentropy',
                  metrics=['accuracy'])
     return model
 
@@ -141,14 +155,17 @@ def traintest():
     model.fit(X_train,
               y_train,
               epochs=20,
-              batch_size=256,
+              batch_size=128,
               validation_data=(X_val, y_val),
               callbacks=[early_stopper, checkpointer],
               verbose=1)
 
     # predict labels for testing set
-    y_predict = model.predict(X_test, batch_size=256)
-    average_f1 = f1_score(np.transpose(y_test), np.transpose(y_predict), average='weighted')
+    #y_predict = model.predict(X_test, batch_size=128)
+    score = model.evaluate(X_test, y_test, verbose=0)
+    #average_f1 = f1_score(np.transpose(y_test), np.transpose(y_predict), average='weighted')
+    print ("score:")
+    print (score)
 
 
 def test(image):
