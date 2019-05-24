@@ -104,25 +104,22 @@ def create_model():
     model.add(tf.keras.layers.Conv2D(filters=32, kernel_size=3, padding='same', activation='relu'))
     model.add(layers.BatchNormalization())    
     model.add(tf.keras.layers.MaxPooling2D(pool_size=2))
-    #model.add(tf.keras.layers.Dropout(0.5))
 
     model.add(tf.keras.layers.Conv2D(filters=64, kernel_size=3, padding='same', activation='relu'))
     model.add(layers.BatchNormalization()) 
     model.add(tf.keras.layers.Conv2D(filters=64, kernel_size=3, padding='same', activation='relu'))
     model.add(layers.BatchNormalization())    
     model.add(tf.keras.layers.MaxPooling2D(pool_size=2))
-    #model.add(tf.keras.layers.Dropout(0.3))
 
     model.add(tf.keras.layers.Conv2D(filters=128, kernel_size=3, padding='same', activation='relu'))
     model.add(layers.BatchNormalization()) 
     model.add(tf.keras.layers.Conv2D(filters=128, kernel_size=3, padding='same', activation='relu'))
     model.add(layers.BatchNormalization())    
     model.add(tf.keras.layers.MaxPooling2D(pool_size=2))
-    #model.add(tf.keras.layers.Dropout(0.3))
 
     model.add(tf.keras.layers.Flatten())
     model.add(tf.keras.layers.Dense(1024, activation='relu'))
-    model.add(tf.keras.layers.Dropout(0.3))
+    model.add(tf.keras.layers.Dropout(0.5))
     model.add(tf.keras.layers.Dense(10, activation='softmax'))
     # Check model details
     model.summary()
@@ -158,7 +155,7 @@ def traintest():
 
     # Callback: Save the model.
     checkpointer = tf.keras.callbacks.ModelCheckpoint(
-        filepath=os.path.join('./', 'checkpoints', '{epoch:03d}-vgg-{val_loss:.3f}.h5'),
+        filepath=os.path.join('.', 'checkpoints', '{epoch:03d}-alex-{val_loss:.3f}.h5'),
         verbose=1,
         save_best_only=True)
 
@@ -166,8 +163,11 @@ def traintest():
     early_stopper = tf.keras.callbacks.EarlyStopping(patience=5, monitor='val_loss')
 
     # Callback: TensorBoard
-    log_dir="logs/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
+    log_dir = os.path.join('.', 'logs', datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
+    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir)
+
+    # Callback: CSVLogger
+    csv_logger = tf.keras.callbacks.CSVLogger(os.path.join(log_dir, datetime.datetime.now().strftime("%Y%m%d-%H%M%S")+'.log'))
     
     # Training
     model.fit(X_train,
@@ -175,7 +175,7 @@ def traintest():
               epochs=30,
               batch_size=128,
               validation_data=(X_val, y_val),
-              callbacks=[early_stopper, checkpointer, tensorboard_callback],
+              callbacks=[early_stopper, checkpointer, tensorboard_callback, csv_logger],
               verbose=1)
 
     # predict labels for testing set
