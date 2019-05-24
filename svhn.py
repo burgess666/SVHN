@@ -101,8 +101,8 @@ def create_model():
     model.add(layers.Dense(10, activation='softmax'))
     model.summary()
 
-    model.compile(optimizer=tf.keras.optimizers.Adam(),
-                 loss=tf.keras.losses.CategoricalCrossentropy(),
+    model.compile(optimizer='adam',
+                 loss='sparse_categorical_crossentropy',
                  metrics=['accuracy'])
     return model
 
