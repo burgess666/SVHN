@@ -7,7 +7,8 @@ from tensorflow.keras import layers
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from sklearn.metrics import f1_score
 import os.path
-import subprocess
+import subprocess, datetime
+
 
 # loading data
 def loading_data():
