@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 from scipy.io import loadmat
+import scipy
 from sklearn.model_selection import train_test_split
 from tensorflow.keras import layers
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
@@ -53,28 +54,40 @@ def loading_data():
 # define models
 def create_model():
 
+    # VGG16 style
     model = tf.keras.Sequential()
     model.add(layers.Conv2D(64, kernel_size=(3,3), padding='same', input_shape=(32,32,3), activation='relu'))
+    model.add(layers.BatchNormalization(axis=-1))
     model.add(layers.Conv2D(64, kernel_size=(3,3), padding='same', activation='relu'))
     model.add(layers.BatchNormalization(axis=-1))
     model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
 
     model.add(layers.Conv2D(128, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
+    model.add(layers.BatchNormalization(axis=-1))
     model.add(layers.Conv2D(128, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
     model.add(layers.BatchNormalization(axis=-1))
     model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
 
     model.add(layers.Conv2D(256, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
+    model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.Conv2D(256, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
+    model.add(layers.BatchNormalization(axis=-1))
     model.add(layers.Conv2D(256, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
     model.add(layers.BatchNormalization(axis=-1))
     model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
 
     model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
+    model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
+    model.add(layers.BatchNormalization(axis=-1))
     model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
     model.add(layers.BatchNormalization(axis=-1))
     model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
 
     model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
+    model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
+    model.add(layers.BatchNormalization(axis=-1))
     model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
     model.add(layers.BatchNormalization(axis=-1))
     model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
@@ -88,37 +101,8 @@ def create_model():
     model.add(layers.Dense(10, activation='softmax'))
     model.summary()
 
-
-    '''
-    model.add(Conv2D(32, (3, 3), input_shape=(32,32,3)))
-    model.add(BatchNormalization(axis=-1))
-    model.add(Activation('relu'))
-    model.add(Conv2D(32, (3, 3)))
-    model.add(BatchNormalization(axis=-1))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2,2)))
-
-    model.add(Conv2D(64,(3, 3)))
-    model.add(BatchNormalization(axis=-1))
-    model.add(Activation('relu'))
-    model.add(Conv2D(64, (3, 3)))
-    model.add(BatchNormalization(axis=-1))
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2,2)))
-
-    model.add(Flatten())
-    # Fully connected layer
-    model.add(Dense(512))
-    model.add(BatchNormalization())
-    model.add(Activation('relu'))
-    model.add(Dropout(0.4))
-    model.add(Dense(10))
-    model.add(Activation('softmax'))
-    '''
-
-
-    model.compile(optimizer='adam',
-                 loss='sparse_categorical_crossentropy',
+    model.compile(optimizer=tf.keras.optimizers.Adam(),
+                 loss=tf.keras.losses.CategoricalCrossentropy(),
                  metrics=['accuracy'])
     return model
 
@@ -127,6 +111,14 @@ def traintest():
     # Loading train and test data
     X_train, X_test, X_val, y_train, y_test, y_val = loading_data()
     # Train : Test : Validation = 65931 : 26032 : 7326
+    '''
+    Train data shape:  (65931, 32, 32, 3)
+    Test data shape:  (26032, 32, 32, 3)
+    Validation data shape:  (7326, 32, 32, 3)
+    label_train shape:  (65931, 1)
+    label_test shape:  (26032, 1)
+    label_validation shape:  (7326, 1)
+    '''
     print('Train data shape: ', X_train.shape)
     print('Test data shape: ', X_test.shape)
     print('Validation data shape: ', X_val.shape)
@@ -138,29 +130,41 @@ def traintest():
 
     # Helper: Save the model.
     checkpointer = ModelCheckpoint(
-        filepath=os.path.join('./', 'checkpoints', '{epoch:03d}-{val_loss:.3f}.h5py'),
+        filepath=os.path.join('./', 'checkpoints', '{epoch:03d}-2-{val_loss:.3f}.h5py'),
         verbose=1,
         save_best_only=True)
 
     # Helper: Stop when we stop learning.
     early_stopper = EarlyStopping(patience=5, monitor='val_loss')
-
     
     # Training
     model.fit(X_train,
               y_train,
               epochs=20,
-              batch_size=128,
+              batch_size=256,
               validation_data=(X_val, y_val),
               callbacks=[early_stopper, checkpointer],
               verbose=1)
 
     # predict labels for testing set
-    y_predict = model.predict(X_test, batch_size=128)
-    average_f1 = f1_score(y_test, y_predict, average='weighted')
+    y_predict = model.predict(X_test, batch_size=256)
+    average_f1 = f1_score(np.transpose(y_test), np.transpose(y_predict), average='weighted')
+
+
+def test(image):
+    # Load model
+    model_path = './'
+    saved_model = tf.keras.models.load_model(model_path)
+
+    # read image
+    read_image = scipy.misc.imread(image)
+    output = saved_model.predict(read_image)
+    return output
+
 
 if __name__ == '__main__':
     traintest()
+
 
 
 
