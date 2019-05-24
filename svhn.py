@@ -13,23 +13,6 @@ import subprocess
 def loading_data():
 
     # First, download dataset (train, test and extra)
-    '''
-    if (os.path.exists(os.path.join('./data', 'train_32x32.mat'))):
-        print("train_32x32.mat exists")
-    else:
-        subprocess.run(['wget', '-P', 'data/', 'http://ufldl.stanford.edu/housenumbers/train_32x32.mat'])
-        
-    if (os.path.exists(os.path.join('./data', 'test_32x32.mat'))):
-        print("test_32x32.mat exists")
-    else:
-        subprocess.run(['wget', '-P', 'data/', 'http://ufldl.stanford.edu/housenumbers/test_32x32.mat'])
-        
-    if (os.path.exists(os.path.join('./data', 'extra_32x32.mat'))):
-        print("extra_32x32.mat exists")
-    else:
-        subprocess.run(['wget', '-P', 'data/', 'http://ufldl.stanford.edu/housenumbers/extra_32x32.mat'])
-    '''
-
     if (os.path.exists('train_32x32.mat')):
         print("train_32x32.mat exists")
     else:
@@ -63,13 +46,14 @@ def loading_data():
     y_test[y_test==10] = 0
     y_extra[y_extra==10] = 0
 
+    X_train = np.append(X_train, X_extra)
+
     # Reshape arrays
     X_train = X_train.transpose((3, 0, 1, 2))
     X_test = X_test.transpose((3, 0, 1, 2))
-    X_extra = X_extra.transpose((3, 0, 1, 2))
-
+    
     # Split origin train set into train set and validation set
-    X_train, X_val, y_train, y_val = train_test_split(np.append(X_train, X_extra), y_train, test_size=0.1)
+    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.1)
     return X_train, X_test, X_val, y_train, y_test, y_val
 
 # define models
