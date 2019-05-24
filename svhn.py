@@ -171,7 +171,7 @@ def traintest():
               epochs=30,
               batch_size=128,
               validation_data=(X_val, y_val),
-              callbacks=[early_stopper, checkpointer],
+              callbacks=[early_stopper, checkpointer, tensorboard_callback],
               verbose=1)
 
     # predict labels for testing set
