@@ -7,6 +7,7 @@ from tensorflow.keras import layers
 from sklearn.metrics import f1_score
 import os.path
 import subprocess, datetime
+import cv2
 
 
 # loading data
@@ -47,47 +48,46 @@ def loading_data():
 
 # define models
 def create_model():
-    '''
+    
     # VGG16 style
     model = tf.keras.Sequential()
     model.add(layers.Conv2D(64, kernel_size=(3,3), padding='same', input_shape=(32,32,3), activation='relu'))
-    #model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.BatchNormalization())
     model.add(layers.Conv2D(64, kernel_size=(3,3), padding='same', activation='relu'))
-    #model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.BatchNormalization())
     model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
 
     model.add(layers.Conv2D(128, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
-    #model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.BatchNormalization())
     model.add(layers.Conv2D(128, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
-    #model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.BatchNormalization())
     model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
 
     model.add(layers.Conv2D(256, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
-    #model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.BatchNormalization())
     model.add(layers.Conv2D(256, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
-    #model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.BatchNormalization())
     model.add(layers.Conv2D(256, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
-    #model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.BatchNormalization())
     model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
 
     model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
-    #model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.BatchNormalization())
     model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
-    #model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.BatchNormalization())
     model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
-    #model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.BatchNormalization())
     model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
 
     model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
-    #model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.BatchNormalization())
     model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
-    #model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.BatchNormalization())
     model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
-    #model.add(layers.BatchNormalization(axis=-1))
+    model.add(layers.BatchNormalization())
     model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
 
     model.add(layers.Flatten())
-
     model.add(layers.Dense(4096, activation='relu'))
     model.add(layers.Dropout(0.5))
     model.add(layers.Dense(4096, activation='relu'))
@@ -95,6 +95,7 @@ def create_model():
     model.add(layers.Dense(10, activation='softmax'))
     model.summary()
     '''
+    # Alex-style
     # C-BN-P-C-BN-P-C-BN-C-BN-P-C-BN-C-BN-P-FC-FC
     model = tf.keras.Sequential()
     model.add(tf.keras.layers.Conv2D(filters=32, kernel_size=3, padding='same', activation='relu', input_shape=(32,32,3)))
@@ -125,6 +126,7 @@ def create_model():
     model.add(tf.keras.layers.Dense(10, activation='softmax'))
     # Check model details
     model.summary()
+    '''
     # Compile model
     model.compile(optimizer=tf.keras.optimizers.Adam(),
                     loss = 'sparse_categorical_crossentropy',
@@ -156,7 +158,7 @@ def traintest():
 
     # Callback: Save the model.
     checkpointer = tf.keras.callbacks.ModelCheckpoint(
-        filepath=os.path.join('./', 'checkpoints', '{epoch:03d}-3-{val_loss:.3f}.h5'),
+        filepath=os.path.join('./', 'checkpoints', '{epoch:03d}-vgg-{val_loss:.3f}.h5'),
         verbose=1,
         save_best_only=True)
 
@@ -185,12 +187,15 @@ def traintest():
 # Predict a single image
 def test(image):
     # Load model
-    model_path = 'model1-010-1-0.264.h5py'
+    model_path = 'model_best.h5'
     saved_model = tf.keras.models.load_model(model_path)
 
     # read image
-    read_image = scipy.misc.imread(image)
-    output = saved_model.predict_classes(read_image)
+    img = cv2.imread(image,3)    
+    img = cv2.resize(img,(32,32))
+    img = np.reshape(img,[1,32,32,3])
+
+    output = saved_model.predict_classes(img)
     return output
 
 
