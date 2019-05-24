@@ -23,11 +23,6 @@ def loading_data():
     else:
         subprocess.run(['wget', '-P', 'http://ufldl.stanford.edu/housenumbers/test_32x32.mat'])
         
-    if (os.path.exists('extra_32x32.mat')):
-        print("extra_32x32.mat exists")
-    else:
-        subprocess.run(['wget', '-P', 'http://ufldl.stanford.edu/housenumbers/extra_32x32.mat'])
-
     # Loading data from mat file
     X_train = loadmat('train_32x32.mat')["X"]
     y_train = loadmat('train_32x32.mat')["y"]
@@ -35,18 +30,11 @@ def loading_data():
     X_test = loadmat('test_32x32.mat')["X"]
     y_test = loadmat('test_32x32.mat')["y"]
 
-    X_extra = loadmat('extra_32x32.mat')["X"]
-    y_extra = loadmat('extra_32x32.mat')["y"]
-
-
     # Normalization
-    X_train, X_test, X_extra = X_train / 255.0, X_test / 255.0, X_extra / 255.0
+    X_train, X_test, X_extra = X_train / 255.0, X_test / 255.0
     # Relabel 10 to 0
     y_train[y_train==10] = 0
     y_test[y_test==10] = 0
-    y_extra[y_extra==10] = 0
-
-    X_train = np.vstack((X_train, X_extra))
 
     # Reshape arrays
     X_train = X_train.transpose((3, 0, 1, 2))
