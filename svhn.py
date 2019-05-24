@@ -30,7 +30,7 @@ def loading_data():
     y_test = loadmat('test_32x32.mat')["y"]
 
     # Normalization
-    X_train, X_test, X_extra = X_train / 255.0, X_test / 255.0
+    X_train, X_test = X_train / 255.0, X_test / 255.0
 
     # Relabel 10 to 0
     y_train[y_train==10] = 0
