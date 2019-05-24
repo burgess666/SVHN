@@ -95,8 +95,8 @@ def create_model():
     model.add(layers.Dense(10, activation='softmax'))
     model.summary()
     '''
+    # C-BN-P-C-BN-P-C-BN-C-BN-P-C-BN-C-BN-P-FC-FC
     model = tf.keras.Sequential()
-    # Must define the input shape in the first layer of the neural network
     model.add(tf.keras.layers.Conv2D(filters=32, kernel_size=3, padding='same', activation='relu', input_shape=(32,32,3)))
     model.add(layers.BatchNormalization())
     model.add(tf.keras.layers.MaxPooling2D(pool_size=2))
@@ -123,11 +123,11 @@ def create_model():
     model.add(tf.keras.layers.Dense(512, activation='relu'))
     model.add(tf.keras.layers.Dropout(0.3))
     model.add(tf.keras.layers.Dense(10, activation='softmax'))
-
-    # Take a look at the model summary
+    # Check model details
     model.summary()
+    # Compile model
     model.compile(optimizer=tf.keras.optimizers.Adam(),
-                    loss = tf.keras.metrics.sparse_categorical_crossentropy(),
+                    loss = tf.keras.losses.sparse_categorical_crossentropy(),
                     metrics=['accuracy'])
     return model
 
@@ -151,20 +151,22 @@ def traintest():
     print('label_test shape: ', y_test.shape)
     print('label_validation shape: ', y_val.shape)
 
+    # create model
     model = create_model()
 
-    # Helper: Save the model.
+    # Callback: Save the model.
     checkpointer = ModelCheckpoint(
         filepath=os.path.join('./', 'checkpoints', '{epoch:03d}-3-{val_loss:.3f}.h5py'),
         verbose=1,
         save_best_only=True)
 
-    # Helper: Stop when we stop learning.
+    # Callback: Stop when we stop learning.
     early_stopper = EarlyStopping(patience=5, monitor='val_loss')
 
-    # Helper: TensorBoard
+    # Callback: TensorBoard
     log_dir="logs/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
+    
     # Training
     model.fit(X_train,
               y_train,
@@ -176,11 +178,11 @@ def traintest():
 
     # predict labels for testing set
     y_predict = model.predict_classes(X_test, batch_size=128)
-    #score = model.evaluate(X_test, y_test, verbose=0)
+    # average F1 scores for each class
     average_f1 = f1_score(y_test, y_predict, average='weighted')
     print("f1_score:", average_f1)
 
-
+# Predict a single image
 def test(image):
     # Load model
     model_path = 'model1-010-1-0.264.h5py'
