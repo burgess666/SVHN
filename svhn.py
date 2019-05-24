@@ -165,7 +165,7 @@ def traintest():
     # Training
     model.fit(X_train,
               y_train,
-              epochs=30,
+              epochs=1,
               batch_size=128,
               validation_data=(X_val, y_val),
               callbacks=[early_stopper, checkpointer],
