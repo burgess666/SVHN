@@ -56,12 +56,14 @@ def create_model():
     model.add(layers.Conv2D(64, kernel_size=(3,3), padding='same', activation='relu'))
     model.add(layers.BatchNormalization())
     model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
+    model.add(tf.keras.layers.Dropout(0.5))
 
     model.add(layers.Conv2D(128, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
     model.add(layers.BatchNormalization())
     model.add(layers.Conv2D(128, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
     model.add(layers.BatchNormalization())
     model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
+    model.add(tf.keras.layers.Dropout(0.5))
 
     model.add(layers.Conv2D(256, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
     model.add(layers.BatchNormalization())
@@ -70,6 +72,7 @@ def create_model():
     #model.add(layers.Conv2D(256, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
     #model.add(layers.BatchNormalization())
     model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
+    model.add(tf.keras.layers.Dropout(0.5))
 
     model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
     model.add(layers.BatchNormalization())
@@ -78,6 +81,7 @@ def create_model():
     #model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
     #model.add(layers.BatchNormalization())
     model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
+    model.add(tf.keras.layers.Dropout(0.5))
 
     model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
     model.add(layers.BatchNormalization())
@@ -86,6 +90,7 @@ def create_model():
     #model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
     #model.add(layers.BatchNormalization())
     model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
+    model.add(tf.keras.layers.Dropout(0.5))
 
     model.add(layers.Flatten())
     model.add(layers.Dense(4096, activation='relu'))
@@ -155,7 +160,7 @@ def traintest():
 
     # Callback: Save the model.
     checkpointer = tf.keras.callbacks.ModelCheckpoint(
-        filepath=os.path.join('.', 'checkpoints', '{epoch:03d}-VGG13-{val_loss:.3f}.h5'),
+        filepath=os.path.join('.', 'checkpoints', '{epoch:03d}-VGG13-dropout-{val_loss:.3f}.h5'),
         verbose=1,
         save_best_only=True)
 
