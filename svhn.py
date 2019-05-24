@@ -67,30 +67,30 @@ def create_model():
     model.add(layers.BatchNormalization())
     model.add(layers.Conv2D(256, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
     model.add(layers.BatchNormalization())
-    model.add(layers.Conv2D(256, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
-    model.add(layers.BatchNormalization())
+    #model.add(layers.Conv2D(256, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
+    #model.add(layers.BatchNormalization())
     model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
 
     model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
     model.add(layers.BatchNormalization())
     model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
     model.add(layers.BatchNormalization())
-    model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
-    model.add(layers.BatchNormalization())
+    #model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
+    #model.add(layers.BatchNormalization())
     model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
 
     model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
     model.add(layers.BatchNormalization())
     model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
     model.add(layers.BatchNormalization())
-    model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
-    model.add(layers.BatchNormalization())
+    #model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
+    #model.add(layers.BatchNormalization())
     model.add(layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
 
     model.add(layers.Flatten())
     model.add(layers.Dense(4096, activation='relu'))
     model.add(layers.Dropout(0.5))
-    model.add(layers.Dense(4096, activation='relu'))
+    model.add(layers.Dense(2048, activation='relu'))
     model.add(layers.Dropout(0.5))
     model.add(layers.Dense(10, activation='softmax'))
     model.summary()
@@ -187,7 +187,7 @@ def traintest():
 # Predict a single image
 def test(image):
     # Load model
-    model_path = 'model_best.h5'
+    model_path = 'model_best_alex.h5'
     saved_model = tf.keras.models.load_model(model_path)
 
     # read image
@@ -201,8 +201,6 @@ def test(image):
 
 if __name__ == '__main__':
     traintest()
-
-
 
 
 
