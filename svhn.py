@@ -175,6 +175,7 @@ def traintest():
     y_predict = model.predict_classes(X_test, batch_size=128)
     #score = model.evaluate(X_test, y_test, verbose=0)
     average_f1 = f1_score(y_test, y_predict, average='weighted')
+    print("f1_score:", average_f1)
 
 
 def test(image):
