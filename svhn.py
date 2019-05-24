@@ -116,7 +116,7 @@ def create_model():
     # Take a look at the model summary
     model.summary()
     model.compile(optimizer='adam',
-                 loss='categorical_crossentropy',
+                 loss='sparse_categorical_crossentropy',
                  metrics=['accuracy'])
     return model
 
