@@ -26,12 +26,12 @@ def loading_data():
     # Loading data from mat file
     X_train = loadmat('train_32x32.mat')["X"]
     y_train = loadmat('train_32x32.mat')["y"]
-
     X_test = loadmat('test_32x32.mat')["X"]
     y_test = loadmat('test_32x32.mat')["y"]
 
     # Normalization
     X_train, X_test, X_extra = X_train / 255.0, X_test / 255.0
+
     # Relabel 10 to 0
     y_train[y_train==10] = 0
     y_test[y_test==10] = 0
@@ -42,6 +42,7 @@ def loading_data():
 
     # Split origin train set into train set and validation set
     X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.1)
+
     return X_train, X_test, X_val, y_train, y_test, y_val
 
 # define models
@@ -164,18 +165,16 @@ def traintest():
     # Training
     model.fit(X_train,
               y_train,
-              epochs=20,
+              epochs=30,
               batch_size=128,
               validation_data=(X_val, y_val),
               callbacks=[early_stopper, checkpointer],
               verbose=1)
 
     # predict labels for testing set
-    #y_predict = model.predict(X_test, batch_size=128)
-    score = model.evaluate(X_test, y_test, verbose=0)
-    #average_f1 = f1_score(np.transpose(y_test), np.transpose(y_predict), average='weighted')
-    print ("score:")
-    print (score)
+    y_predict = model.predict_classes(X_test, batch_size=128)
+    #score = model.evaluate(X_test, y_test, verbose=0)
+    average_f1 = f1_score(y_test, y_predict, average='weighted')
 
 
 def test(image):
