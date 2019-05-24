@@ -48,8 +48,8 @@ def loading_data():
 
 # define models
 def create_model():
-    '''
-    # VGG16 style
+    
+    # VGG style
     model = tf.keras.Sequential()
     model.add(layers.Conv2D(64, kernel_size=(3,3), padding='same', input_shape=(32,32,3), activation='relu'))
     model.add(layers.BatchNormalization())
@@ -90,7 +90,7 @@ def create_model():
     model.add(layers.Flatten())
     model.add(layers.Dense(4096, activation='relu'))
     model.add(layers.Dropout(0.5))
-    model.add(layers.Dense(2048, activation='relu'))
+    model.add(layers.Dense(4096, activation='relu'))
     model.add(layers.Dropout(0.5))
     model.add(layers.Dense(10, activation='softmax'))
     model.summary()
@@ -123,7 +123,7 @@ def create_model():
     model.add(tf.keras.layers.Dense(10, activation='softmax'))
     # Check model details
     model.summary()
-    
+    '''
     # Compile model
     model.compile(optimizer=tf.keras.optimizers.Adam(),
                     loss = 'sparse_categorical_crossentropy',
@@ -155,7 +155,7 @@ def traintest():
 
     # Callback: Save the model.
     checkpointer = tf.keras.callbacks.ModelCheckpoint(
-        filepath=os.path.join('.', 'checkpoints', '{epoch:03d}-alex-{val_loss:.3f}.h5'),
+        filepath=os.path.join('.', 'checkpoints', '{epoch:03d}-VGG13-{val_loss:.3f}.h5'),
         verbose=1,
         save_best_only=True)
 
