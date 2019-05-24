@@ -126,9 +126,9 @@ def create_model():
 
     # Take a look at the model summary
     model.summary()
-    model.compile(optimizer='adam',
-                 loss='sparse_categorical_crossentropy',
-                 metrics=['accuracy'])
+    model.compile(optimizer=tf.keras.optimizers.Adam(),
+                    loss = tf.keras.metrics.sparse_categorical_crossentropy(),
+                    metrics=['accuracy'])
     return model
 
 
@@ -161,11 +161,14 @@ def traintest():
 
     # Helper: Stop when we stop learning.
     early_stopper = EarlyStopping(patience=5, monitor='val_loss')
-    
+
+    # Helper: TensorBoard
+    log_dir="logs/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
     # Training
     model.fit(X_train,
               y_train,
-              epochs=1,
+              epochs=30,
               batch_size=128,
               validation_data=(X_val, y_val),
               callbacks=[early_stopper, checkpointer],
@@ -180,12 +183,12 @@ def traintest():
 
 def test(image):
     # Load model
-    model_path = './'
+    model_path = 'model1-010-1-0.264.h5py'
     saved_model = tf.keras.models.load_model(model_path)
 
     # read image
     read_image = scipy.misc.imread(image)
-    output = saved_model.predict(read_image)
+    output = saved_model.predict_classes(read_image)
     return output
 
 
