@@ -4,7 +4,6 @@ from scipy.io import loadmat
 import scipy
 from sklearn.model_selection import train_test_split
 from tensorflow.keras import layers
-from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from sklearn.metrics import f1_score
 import os.path
 import subprocess, datetime
@@ -156,13 +155,13 @@ def traintest():
     model = create_model()
 
     # Callback: Save the model.
-    checkpointer = ModelCheckpoint(
-        filepath=os.path.join('./', 'checkpoints', '{epoch:03d}-3-{val_loss:.3f}.h5py'),
+    checkpointer = tf.keras.callbacks.ModelCheckpoint(
+        filepath=os.path.join('./', 'checkpoints', '{epoch:03d}-3-{val_loss:.3f}.h5'),
         verbose=1,
         save_best_only=True)
 
     # Callback: Stop when we stop learning.
-    early_stopper = EarlyStopping(patience=5, monitor='val_loss')
+    early_stopper = tf.keras.callbacks.EarlyStopping(patience=5, monitor='val_loss')
 
     # Callback: TensorBoard
     log_dir="logs/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
