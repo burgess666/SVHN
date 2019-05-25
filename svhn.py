@@ -206,17 +206,17 @@ def traintest():
     print('label_validation shape: ', y_val.shape)
 
     # choose the type of model to train
-    model_choice = 'A'
+    #model_choice = 'A'
     #model_choice = 'B'
     #model_choice = 'C'
-    #model_choice = 'D'
+    model_choice = 'D'
 
     # create model
     model = create_model(model_choice)
 
     # Callback: Save the model.
     checkpointer = tf.keras.callbacks.ModelCheckpoint(
-        filepath=os.path.join('.', 'checkpoints', model_choice+'-best-v4.h5'),
+        filepath=os.path.join('.', 'checkpoints', model_choice+'-best-dropout-v4.h5'),
         verbose=1,
         save_best_only=True)
 
@@ -237,7 +237,7 @@ def traintest():
               batch_size=128,
               validation_data=(X_val, y_val),
               callbacks=[early_stopper, checkpointer, tensorboard_callback, csv_logger],
-              verbose=1)
+              verbose=2)
 
     # predict labels for testing set
     y_predict = model.predict_classes(X_test, batch_size=128)
