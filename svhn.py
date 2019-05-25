@@ -46,10 +46,10 @@ def loading_data():
     return X_train, X_test, X_val, y_train, y_test, y_val
 
 # define models
-def create_model(model_choice='A'):
-   
-   # sequential model
-   model = tf.keras.Sequential()
+def create_model(model_choice='A'): 
+    
+    # sequential model
+    model = tf.keras.Sequential()
 
     if model_choice == 'A':
         model.add(tf.keras.layers.Conv2D(filters=32, kernel_size=3, padding='same', activation='relu', input_shape=(32,32,3)))
