@@ -74,7 +74,7 @@ def create_model(model_choice='A'):
         model.add(layers.Flatten())
         #model.add(layers.Dense(4096, activation='relu'))
         #model.add(layers.Dropout(0.5))
-        model.add(layers.Dense(2048, activation='relu'))
+        model.add(layers.Dense(4096, activation='relu'))
         model.add(layers.Dropout(0.5))
         model.add(layers.Dense(10, activation='softmax'))
 
@@ -231,7 +231,7 @@ def traintest():
 
     # Callback: Save the model.
     checkpointer = tf.keras.callbacks.ModelCheckpoint(
-        filepath=os.path.join('.', 'checkpoints', model_choice+'-best-v3.h5'),
+        filepath=os.path.join('.', 'checkpoints', model_choice+'-best-v4.h5'),
         verbose=1,
         save_best_only=True)
 
