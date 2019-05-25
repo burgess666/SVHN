@@ -227,7 +227,7 @@ def traintest():
 
     # Callback: Save the model.
     checkpointer = tf.keras.callbacks.ModelCheckpoint(
-        filepath=os.path.join('.', 'checkpoints', 'modelA-best.h5'),
+        filepath=os.path.join('.', 'checkpoints', model_choice+'-best.h5'),
         verbose=1,
         save_best_only=True)
 
@@ -235,11 +235,11 @@ def traintest():
     early_stopper = tf.keras.callbacks.EarlyStopping(patience=5, monitor='val_loss')
 
     # Callback: TensorBoard
-    log_dir = os.path.join('.', 'logs', datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
+    log_dir = os.path.join('.', 'logs', model_choice+'-'+datetime.datetime.now().strftime("%Y%m%d-%H%M%S"))
     tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir)
 
     # Callback: CSVLogger
-    csv_logger = tf.keras.callbacks.CSVLogger(os.path.join(log_dir, datetime.datetime.now().strftime("%Y%m%d-%H%M%S")+'.log'))
+    csv_logger = tf.keras.callbacks.CSVLogger(os.path.join(log_dir, model_choice+'-'+datetime.datetime.now().strftime("%Y%m%d-%H%M%S")+'.log'))
     
     # Training
     model.fit(X_train,
