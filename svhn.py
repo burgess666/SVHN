@@ -9,7 +9,6 @@ import os.path
 import subprocess, datetime
 import cv2
 
-
 # loading data
 def loading_data():
 
@@ -48,7 +47,9 @@ def loading_data():
 
 # define models
 def create_model(model_choice='A'):
-    model = tf.keras.Sequential()
+   
+   # sequential model
+   model = tf.keras.Sequential()
 
     if model_choice == 'A':
         model.add(tf.keras.layers.Conv2D(filters=32, kernel_size=3, padding='same', activation='relu', input_shape=(32,32,3)))
@@ -70,13 +71,6 @@ def create_model(model_choice='A'):
         model.add(layers.BatchNormalization())    
         model.add(tf.keras.layers.MaxPooling2D(pool_size=2, padding='same'))
 
-        model.add(tf.keras.layers.Flatten())
-        model.add(tf.keras.layers.Dense(4096, activation='relu'))
-        model.add(tf.keras.layers.Dropout(0.5))
-        model.add(tf.keras.layers.Dense(4096, activation='relu'))
-        model.add(tf.keras.layers.Dropout(0.5))
-        model.add(tf.keras.layers.Dense(10, activation='softmax'))
-
     elif model_choice == 'B':
         model.add(tf.keras.layers.Conv2D(filters=64, kernel_size=3, padding='same', activation='relu', input_shape=(32,32,3)))
         model.add(layers.BatchNormalization())
@@ -96,13 +90,6 @@ def create_model(model_choice='A'):
         model.add(tf.keras.layers.Conv2D(filters=256, kernel_size=3, padding='same', activation='relu'))
         model.add(layers.BatchNormalization())    
         model.add(tf.keras.layers.MaxPooling2D(pool_size=2, padding='same'))
-
-        model.add(tf.keras.layers.Flatten())
-        model.add(tf.keras.layers.Dense(4096, activation='relu'))
-        model.add(tf.keras.layers.Dropout(0.5))
-        model.add(tf.keras.layers.Dense(4096, activation='relu'))
-        model.add(tf.keras.layers.Dropout(0.5))
-        model.add(tf.keras.layers.Dense(10, activation='softmax'))
 
     elif model_choice == 'C':
         model.add(layers.Conv2D(64, kernel_size=(3,3), padding='same', input_shape=(32,32,3), activation='relu'))
@@ -134,13 +121,6 @@ def create_model(model_choice='A'):
         model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
         model.add(layers.BatchNormalization())
         model.add(layers.MaxPool2D(pool_size=(2, 2), padding='same'))
-
-        model.add(layers.Flatten())
-        model.add(layers.Dense(4096, activation='relu'))
-        model.add(layers.Dropout(0.5))
-        model.add(layers.Dense(4096, activation='relu'))
-        model.add(layers.Dropout(0.5))
-        model.add(layers.Dense(10, activation='softmax'))
 
     elif model_choice == 'D':
         model.add(layers.Conv2D(64, kernel_size=(3,3), padding='same', input_shape=(32,32,3), activation='relu'))
@@ -179,15 +159,15 @@ def create_model(model_choice='A'):
         model.add(layers.BatchNormalization())
         model.add(layers.MaxPool2D(pool_size=(2, 2), padding='same'))
 
-        model.add(layers.Flatten())
-        model.add(layers.Dense(4096, activation='relu'))
-        model.add(layers.Dropout(0.5))
-        model.add(layers.Dense(4096, activation='relu'))
-        model.add(layers.Dropout(0.5))
-        model.add(layers.Dense(10, activation='softmax'))
-
     else:
-        raise ValueError("Invalid model.")   
+        raise ValueError("Invalid model.")
+
+    model.add(layers.Flatten())
+    model.add(layers.Dense(4096, activation='relu'))
+    model.add(layers.Dropout(0.5))
+    model.add(layers.Dense(4096, activation='relu'))
+    model.add(layers.Dropout(0.5))
+    model.add(layers.Dense(10, activation='softmax'))
     # Check model details
     model.summary()
     
@@ -201,6 +181,7 @@ def create_model(model_choice='A'):
 def traintest():
     # Loading train and test data
     X_train, X_test, X_val, y_train, y_test, y_val = loading_data()
+    
     # Train : Test : Validation = 65931 : 26032 : 7326
     '''
     Train data shape:  (65931, 32, 32, 3)
@@ -217,6 +198,7 @@ def traintest():
     print('label_test shape: ', y_test.shape)
     print('label_validation shape: ', y_val.shape)
 
+    # choose the type of model to train
     model_choice = 'A'
     #model_choice = 'B'
     #model_choice = 'C'
@@ -252,7 +234,7 @@ def traintest():
 
     # predict labels for testing set
     y_predict = model.predict_classes(X_test, batch_size=128)
-    # average F1 scores for each class
+    # average F1 scores across each class
     average_f1 = f1_score(y_test, y_predict, average='weighted')
     print("f1_score:", average_f1)
 
