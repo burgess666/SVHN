@@ -70,13 +70,7 @@ def create_model(model_choice='A'):
         model.add(tf.keras.layers.Conv2D(filters=128, kernel_size=3, padding='same', activation='relu'))
         model.add(layers.BatchNormalization())    
         model.add(tf.keras.layers.MaxPooling2D(pool_size=2, padding='same'))             
-
-        model.add(layers.Flatten())
-        model.add(layers.Dense(4096, activation='relu'))
-        model.add(layers.Dropout(0.5))
-        model.add(layers.Dense(2048, activation='relu'))
-        model.add(layers.Dropout(0.5))
-        model.add(layers.Dense(10, activation='softmax'))   
+ 
 
     elif model_choice == 'B':
         model.add(tf.keras.layers.Conv2D(filters=64, kernel_size=3, padding='same', activation='relu', input_shape=(32,32,3)))
@@ -96,14 +90,7 @@ def create_model(model_choice='A'):
         model.add(layers.BatchNormalization()) 
         model.add(tf.keras.layers.Conv2D(filters=256, kernel_size=3, padding='same', activation='relu'))
         model.add(layers.BatchNormalization())    
-        model.add(tf.keras.layers.MaxPooling2D(pool_size=2, padding='same'))          
-
-        model.add(layers.Flatten())
-        model.add(layers.Dense(4096, activation='relu'))
-        model.add(layers.Dropout(0.5))
-        model.add(layers.Dense(2048, activation='relu'))
-        model.add(layers.Dropout(0.5))
-        model.add(layers.Dense(10, activation='softmax'))      
+        model.add(tf.keras.layers.MaxPooling2D(pool_size=2, padding='same'))              
 
 
     elif model_choice == 'C':
@@ -136,13 +123,7 @@ def create_model(model_choice='A'):
         model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
         model.add(layers.BatchNormalization())
         model.add(layers.MaxPool2D(pool_size=(2, 2), padding='same'))        
-
-        model.add(layers.Flatten())
-        model.add(layers.Dense(4096, activation='relu'))
-        model.add(layers.Dropout(0.5))
-        model.add(layers.Dense(2048, activation='relu'))
-        model.add(layers.Dropout(0.5))
-        model.add(layers.Dense(10, activation='softmax'))     
+    
 
     elif model_choice == 'D':
         model.add(layers.Conv2D(64, kernel_size=(3,3), padding='same', input_shape=(32,32,3), activation='relu'))
@@ -150,14 +131,12 @@ def create_model(model_choice='A'):
         model.add(layers.Conv2D(64, kernel_size=(3,3), padding='same', activation='relu'))
         model.add(layers.BatchNormalization())
         model.add(layers.MaxPool2D(pool_size=(2, 2), padding='same'))
-        #model.add(layers.Dropout(0.3))
 
         model.add(layers.Conv2D(128, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
         model.add(layers.BatchNormalization())
         model.add(layers.Conv2D(128, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
         model.add(layers.BatchNormalization())
         model.add(layers.MaxPool2D(pool_size=(2, 2), padding='same'))
-        #model.add(layers.Dropout(0.3))
 
         model.add(layers.Conv2D(256, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
         model.add(layers.BatchNormalization())
@@ -166,7 +145,6 @@ def create_model(model_choice='A'):
         model.add(layers.Conv2D(256, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
         model.add(layers.BatchNormalization())
         model.add(layers.MaxPool2D(pool_size=(2, 2), padding='same'))
-        #model.add(layers.Dropout(0.3))
 
         model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
         model.add(layers.BatchNormalization())
@@ -175,7 +153,6 @@ def create_model(model_choice='A'):
         model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
         model.add(layers.BatchNormalization())
         model.add(layers.MaxPool2D(pool_size=(2, 2), padding='same'))
-        #model.add(layers.Dropout(0.3))
 
         model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
         model.add(layers.BatchNormalization())
@@ -184,17 +161,17 @@ def create_model(model_choice='A'):
         model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
         model.add(layers.BatchNormalization())
         model.add(layers.MaxPool2D(pool_size=(2, 2), padding='same'))
-        #model.add(layers.Dropout(0.3))    
-        
-        model.add(layers.Flatten())
-        model.add(layers.Dense(4096, activation='relu'))
-        model.add(layers.Dropout(0.5))
-        model.add(layers.Dense(2048, activation='relu'))
-        model.add(layers.Dropout(0.5))
-        model.add(layers.Dense(10, activation='softmax'))
 
     else:
         raise ValueError("Invalid model.")
+
+
+    model.add(layers.Flatten())
+    model.add(layers.Dense(4096, activation='relu'))
+    model.add(layers.Dropout(0.5))
+    model.add(layers.Dense(2048, activation='relu'))
+    model.add(layers.Dropout(0.5))
+    model.add(layers.Dense(10, activation='softmax'))
 
     # Check model details
     model.summary()
@@ -264,14 +241,14 @@ def traintest():
     y_predict = model.predict_classes(X_test, batch_size=128)
     # average F1 scores across each class
     average_f1 = f1_score(y_test, y_predict, average='weighted')
-    print("f1_score:", average_f1)
+    return average_f1
 
 
 # Predict a single image
 def test(image):
 
     # Load model
-    model_path = 'model-best.h5'
+    model_path = 'model_a.h5'
     saved_model = tf.keras.models.load_model(model_path)
 
     # read image
@@ -284,5 +261,8 @@ def test(image):
     return output
 
 if __name__ == '__main__':
-    traintest()
+    average_f1 = traintest()
+    print("f1_score: ", average_f1)
+
+
 
