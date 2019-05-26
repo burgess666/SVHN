@@ -12,7 +12,7 @@ import cv2
 # loading data
 def loading_data():
 
-    # First, download dataset (train, test and extra)
+    # First, download dataset (train and test)
     if (os.path.exists('train_32x32.mat')):
         print("train_32x32.mat exists")
     else:
@@ -130,14 +130,14 @@ def create_model(model_choice='A'):
         model.add(layers.Conv2D(64, kernel_size=(3,3), padding='same', activation='relu'))
         model.add(layers.BatchNormalization())
         model.add(layers.MaxPool2D(pool_size=(2, 2), padding='same'))
-        model.add(layers.Dropout(0.5))
+        #model.add(layers.Dropout(0.5))
 
         model.add(layers.Conv2D(128, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
         model.add(layers.BatchNormalization())
         model.add(layers.Conv2D(128, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
         model.add(layers.BatchNormalization())
         model.add(layers.MaxPool2D(pool_size=(2, 2), padding='same'))
-        model.add(layers.Dropout(0.5))
+        #model.add(layers.Dropout(0.5))
 
         model.add(layers.Conv2D(256, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
         model.add(layers.BatchNormalization())
@@ -146,7 +146,7 @@ def create_model(model_choice='A'):
         model.add(layers.Conv2D(256, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
         model.add(layers.BatchNormalization())
         model.add(layers.MaxPool2D(pool_size=(2, 2), padding='same'))
-        model.add(layers.Dropout(0.5))
+        #model.add(layers.Dropout(0.5))
 
         model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
         model.add(layers.BatchNormalization())
@@ -155,7 +155,7 @@ def create_model(model_choice='A'):
         model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
         model.add(layers.BatchNormalization())
         model.add(layers.MaxPool2D(pool_size=(2, 2), padding='same'))
-        model.add(layers.Dropout(0.5))
+        #model.add(layers.Dropout(0.5))
 
         model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
         model.add(layers.BatchNormalization())
@@ -164,7 +164,7 @@ def create_model(model_choice='A'):
         model.add(layers.Conv2D(512, kernel_size=(3, 3), strides=(1, 1), padding='same', activation='relu'))
         model.add(layers.BatchNormalization())
         model.add(layers.MaxPool2D(pool_size=(2, 2), padding='same'))
-        model.add(layers.Dropout(0.5))
+        #model.add(layers.Dropout(0.5))
 
     else:
         raise ValueError("Invalid model.")
@@ -173,7 +173,7 @@ def create_model(model_choice='A'):
     model.add(layers.Dense(4096, activation='relu'))
     model.add(layers.Dropout(0.5))
     model.add(layers.Dense(2048, activation='relu'))
-    model.add(layers.Dropout(0.3))
+    model.add(layers.Dropout(0.5))
     model.add(layers.Dense(10, activation='softmax'))
     # Check model details
     model.summary()
@@ -216,7 +216,7 @@ def traintest():
 
     # Callback: Save the model.
     checkpointer = tf.keras.callbacks.ModelCheckpoint(
-        filepath=os.path.join('.', 'checkpoints', model_choice+'-best-dropout-v4.h5'),
+        filepath=os.path.join('.', 'checkpoints', model_choice+'-best-v2.h5'),
         verbose=1,
         save_best_only=True)
 
@@ -245,8 +245,10 @@ def traintest():
     average_f1 = f1_score(y_test, y_predict, average='weighted')
     print("f1_score:", average_f1)
 
+
 # Predict a single image
 def test(image):
+
     # Load model
     model_path = '005-alex-0.276-best.h5'
     saved_model = tf.keras.models.load_model(model_path)
@@ -258,7 +260,6 @@ def test(image):
 
     output = saved_model.predict_classes(img)
     return output
-
 
 if __name__ == '__main__':
     traintest()
