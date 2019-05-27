@@ -204,17 +204,17 @@ def traintest():
     print('label_validation shape: ', y_val.shape)
 
     # choose the type of model to train
-    #model_choice = 'A'
+    model_choice = 'A'
     #model_choice = 'B'
     #model_choice = 'C'
-    model_choice = 'D'
+    #model_choice = 'D'
 
     # create model
     model = create_model(model_choice)
 
     # Callback: Save the model.
     checkpointer = tf.keras.callbacks.ModelCheckpoint(
-        filepath=os.path.join('.', 'checkpoints', model_choice+'-best-v2.h5'),
+        filepath=os.path.join('.', 'checkpoints', model_choice+'-best-v6.h5'),
         verbose=1,
         save_best_only=True)
 
@@ -248,14 +248,11 @@ def traintest():
 def test(image):
 
     # Load model
-    model_path = 'model_a.h5'
+    model_path = 'D-best-v6.h5'
     saved_model = tf.keras.models.load_model(model_path)
 
-    # read image
-    img = cv2.imread(image,3)
-    # resize images to 32*32    
-    img = cv2.resize(img,(32,32))
-    img = np.reshape(img,[1,32,32,3])
+    # read image and resize images to 32*32    
+    img = np.reshape((cv2.resize(cv2.imread(image,3),(32,32))) / 255.0, [1,32,32,3])
     # predict
     output = saved_model.predict_classes(img)
     return output
@@ -263,6 +260,5 @@ def test(image):
 if __name__ == '__main__':
     average_f1 = traintest()
     print("f1_score: ", average_f1)
-
 
 
