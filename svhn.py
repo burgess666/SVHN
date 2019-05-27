@@ -13,6 +13,7 @@ import cv2
 def loading_data():
 
     # First, download dataset (train and test)
+    # check in current folder
     if (os.path.exists('train_32x32.mat')):
         print("train_32x32.mat exists")
     else:
@@ -36,11 +37,11 @@ def loading_data():
     y_train[y_train==10] = 0
     y_test[y_test==10] = 0
 
-    # Reshape arrays
+    # Reshape arrays (#samples, width, height, channel)
     X_train = X_train.transpose((3, 0, 1, 2))
     X_test = X_test.transpose((3, 0, 1, 2))
 
-    # Split origin train set into train set and validation set
+    # Split origin train set into train set and validation set (10%)
     X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.1)
 
     return X_train, X_test, X_val, y_train, y_test, y_val
@@ -248,17 +249,17 @@ def traintest():
 def test(image):
 
     # Load model
-    model_path = 'D-best-v6.h5'
+    model_path = 'model-best.h5'
     saved_model = tf.keras.models.load_model(model_path)
 
-    # read image and resize images to 32*32    
+    # read image and resize images to 32*32, and also norm   
     img = np.reshape((cv2.resize(cv2.imread(image,3),(32,32))) / 255.0, [1,32,32,3])
     # predict
     output = saved_model.predict_classes(img)
     return output
 
+# main function
 if __name__ == '__main__':
     average_f1 = traintest()
     print("f1_score: ", average_f1)
-
 
